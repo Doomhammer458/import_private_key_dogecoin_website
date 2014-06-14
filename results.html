@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+ <link rel="shortcut icon" href="/static/favicon.ico" />
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/static/css/normalize.css">
+  <link rel="stylesheet" href="/static/css/foundation.css" />
+   <meta http-equiv="refresh" content="60">
+
+ <script src="/static/js/vendor/modernizr.js"></script>
+    <title>Import Private Key </title>
+</head>
+<body>
+
+user id =  {{account}}
+
+<br>
+status = {{status}}
+<br>
+coins in address = {{coin}}
+<br>
+{%if tx == None %}
+
+
+transaction ID = pending
+
+
+
+{%else%}
+transaction ID = <a href = "http://dogechain.info/tx/{{tx}}">{{tx}}</a>
+{%end%} 
+
+<br>
+
+
+    
+
+<br>
+    <script src="/static/js/vendor/jquery.js"></script>
+    <script src="/static/js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+    </script>
+</body>
+</html>
