@@ -34,6 +34,9 @@ class MainHandler(tornado.web.RequestHandler):
     def post(self):
         key_input = self.get_argument("priv")
         address = self.get_argument("withdraw")
+        if len(address) != 34:
+            self.write("withdrawl address does not contain 34 characters")
+            return
         acc = str(uuid.uuid4())
         key = priv_key(priv_key = key_input, withdrawl= address,
 account = acc , complete = False , status = "not imported")
@@ -41,8 +44,10 @@ account = acc , complete = False , status = "not imported")
         session = Session()
         check = session.query(priv_key).filter(priv_key.priv_key==key_input).first()
         if check !=None:
-            self.write("Error key had already been imported")
+            self.write("Error: Key had already been imported")
+            session.close()
             return
+        
         session.add(key)
 
         session.commit()

@@ -32,20 +32,46 @@ for instance in import_list:
         
         try:
             doge_conn.importprivkey(instance.priv_key,instance.account)
-        except:
-            print "rescanning"
-            time.sleep(1)
-            time.sleep(400)
+        except Exception, e:
+            if str(e) == "Invalid private key encoding":
+                print "private key is not valid" 
+                instance.status = "invalid private key"
+                session.add(instance)
+                session.commit()
+                continue
+            
+            elif str(e) == "timed out":
+                print "rescanning"
+                instance.status = "importing"
+                session.add(instance)
+                session.commit()
+                time.sleep(1)
+                time.sleep(400)
+            else:
+                instance.status = str(e)
+                session.add(instance)
+                session.commit()
+                print e
+                
+            
             
     else:
         doge_conn.importprivkey(instance.priv_key,instance.account,rescan=False)
         print "imported but not scanned"
+        instance.status = "importing"
+        session.add(instance)
+   
     c+=1 
 print "scan complete"
+
+import_list = session.query(priv_key).filter(priv_key.status =="importing").all()
+
 for instance in import_list:
     try:
         doge_conn = doge.connect_to_local()
+       
         instance.pub_key = doge_conn.getaddressesbyaccount(instance.account)[0]
+
         url = "https://dogechain.info/api/v1/address/balance/" + str(instance.pub_key)
         #print url
         res = requests.get(url)
@@ -66,5 +92,5 @@ for instance in import_list:
     session.commit()
     
     
-    
+session.commit()
 session.close()
