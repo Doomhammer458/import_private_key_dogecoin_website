@@ -1,44 +1,34 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
-<head>
- <link rel="shortcut icon" href="/static/favicon.ico" />
-
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="/static/css/normalize.css">
-  <link rel="stylesheet" href="/static/css/foundation.css" />
- <script src="/static/js/vendor/modernizr.js"></script>
-    <title>Import Private Key </title>
-</head>
-<body>
-
-    <form method="post" action="/" > 
-   <div class="row">
-    <div class="large-12 columns">
-      <label>private key
-        <input type="text"  name="priv" />
-      </label>
-    </div>
-  </div>
-<div class="row">
-    <div class="large-12 columns">
-      <label>Address to withdraw to
-        <input type="text"  name="withdraw" />
-      </label>
-    </div>
-  </div>
-	<br>
-    <input class = "round button" type=submit value="Submit"> 
-
-    </form> 
-</ul>
-<br>
-    <script src="/static/js/vendor/jquery.js"></script>
-    <script src="/static/js/foundation.min.js"></script>
-    <script>
-      $(document).foundation();
-    </script>
-</body>
+	<head>
+		<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,400italic|PT+Mono' rel='stylesheet' type='text/css'>
+		<link rel="shortcut icon" href="static/favicon.ico" />
+		<link rel="stylesheet" href="static/css/style.css" type="text/css" />
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Import Private Key </title>
+	</head>
+	<body>
+		<div id="title">Wallet Importer</div>
+		<div id="form-container">
+			<form method="post" action="/" >
+				<div class="row">
+					<label>Private key:
+						<input type="text" name="priv" />
+					</label>
+				</div>
+				<div class="row">
+					<label>Address to withdraw to:
+ 						<input type="text" name="withdraw" />
+					</label>
+				</div>
+				<input class="button" type=submit value="Submit">
+			</form>
+		</div>
+		<footer>
+			<span id="warn-symbol"><img src="static/warning.svg" width="64" height="64"></img></span>
+			<span><b>Warning!</b> This shouldn't be used to import paper wallets containing large amounts of dogecoins.</span>
+		</footer>
+		<script src="static/js/vendor/jquery.js"></script>
+	</body>
 </html>
