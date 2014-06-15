@@ -1,7 +1,7 @@
 import sqlalchemy as sql
 engine = sql.create_engine("mysql://doge:dogecoin@localhost/dogecoin")
 from sqlalchemy.ext.declarative import declarative_base
-
+import requests
 Base = declarative_base()
 from sqlalchemy import Column, String,Float, Boolean 
 class priv_key(Base):
@@ -24,25 +24,47 @@ doge_conn = doge.connect_to_local()
 from sqlalchemy.orm import sessionmaker
 Session = sessionmaker(bind=engine)
 session = Session()
-
-for instance in session.query(priv_key).filter(priv_key.complete==False):
-    
+import_list = session.query(priv_key).filter(priv_key.status =="not imported").all()
+print import_list
+c=0
+for instance in import_list:
+    if c ==len(import_list)-1:
+        
+        try:
+            doge_conn.importprivkey(instance.priv_key,instance.account)
+        except:
+            print "rescanning"
+            time.sleep(1)
+            time.sleep(400)
+            
+    else:
+        doge_conn.importprivkey(instance.priv_key,instance.account,rescan=False)
+        print "imported but not scanned"
+    c+=1 
+print "scan complete"
+for instance in import_list:
     try:
-        doge_conn.importprivkey(instance.priv_key,instance.account)
-    except:
-        print "rescanning"
-        time.sleep(1)
-        print "rescanning"
-        time.sleep(400)
-    print "scan complete"
-    doge_conn = doge.connect_to_local()
-    instance.pub_key = doge_conn.getaddressesbyaccount(instance.account)[0]
-    instance.coin_amount = doge_conn.getbalance(account=instance.account)
-    instance.tx_id = doge_conn.sendfrom(instance.account,instance.withdrawl,float(str(instance.coin_amount -1)))
+        doge_conn = doge.connect_to_local()
+        instance.pub_key = doge_conn.getaddressesbyaccount(instance.account)[0]
+        url = "https://dogechain.info/api/v1/address/balance/" + str(instance.pub_key)
+        #print url
+        res = requests.get(url)
+        res_dict = res.json()
+        instance.coin_amount = float(res_dict["balance"])
+        
+        print instance.coin_amount
+        
+        instance.tx_id = doge_conn.sendfrom(instance.account,instance.withdrawl,float(str(instance.coin_amount -1)))
+        
+        instance.status = "complete"
+        instance.complete = True
+    except Exception, err:
+        instance.status = "error:"+str(err)
+        print err
     print instance
-    instance.status = "complete"
-    instance.complete = True
     session.add(instance)
     session.commit()
+    
+    
     
 session.close()
