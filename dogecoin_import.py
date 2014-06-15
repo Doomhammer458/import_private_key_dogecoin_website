@@ -24,17 +24,25 @@ doge_conn = doge.connect_to_local()
 from sqlalchemy.orm import sessionmaker
 Session = sessionmaker(bind=engine)
 session = Session()
-
-for instance in session.query(priv_key).filter(priv_key.complete==False):
-    
-    try:
-        doge_conn.importprivkey(instance.priv_key,instance.account)
-    except:
-        print "rescanning"
-        time.sleep(1)
-        print "rescanning"
-        time.sleep(400)
-    print "scan complete"
+import_list = session.query(priv_key).filter(priv_key.status =="not imported").all()
+print import_list
+c=0
+for instance in import_list:
+    if c ==len(import_list)-1:
+        
+        try:
+            doge_conn.importprivkey(instance.priv_key,instance.account)
+        except:
+            print "rescanning"
+            time.sleep(1)
+            time.sleep(400)
+            
+    else:
+        doge_conn.importprivkey(instance.priv_key,instance.account,rescan=False)
+        print "imported but not scanned"
+    c+=1 
+print "scan complete"
+for instance in import_list:
     doge_conn = doge.connect_to_local()
     instance.pub_key = doge_conn.getaddressesbyaccount(instance.account)[0]
     instance.coin_amount = doge_conn.getbalance(account=instance.account)
