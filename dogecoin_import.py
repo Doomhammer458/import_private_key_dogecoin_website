@@ -59,9 +59,9 @@ for instance in import_list:
         instance.status = "complete"
         instance.complete = True
     except Exception, err:
-        #instance.status = "error:"+str(err)
+        instance.status = "error:"+str(err)
         print err
-    #print instance
+    print instance
     session.add(instance)
     session.commit()
     

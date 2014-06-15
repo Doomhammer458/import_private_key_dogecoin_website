@@ -39,6 +39,10 @@ class MainHandler(tornado.web.RequestHandler):
 account = acc , complete = False , status = "not imported")
         Session = sessionmaker(bind=engine)
         session = Session()
+        check = session.query(priv_key).filter(priv_key.priv_key==key_input).first()
+        if check !=None:
+            self.write("Error key had already been imported")
+            return
         session.add(key)
 
         session.commit()
