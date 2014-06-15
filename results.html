@@ -15,13 +15,13 @@
 </head>
 <body>
 
-user id =  {{account}}
+import id =  {{account}}
 
 <br>
 status = {{status}}
 <br>
-coins in address = {{coin}}
-<br>
+
+
 {%if tx == None %}
 
 
@@ -30,6 +30,9 @@ transaction ID = pending
 
 
 {%else%}
+
+coins in address = {{coin}}
+<br>
 transaction ID = <a href = "http://dogechain.info/tx/{{tx}}">{{tx}}</a>
 {%end%} 
 

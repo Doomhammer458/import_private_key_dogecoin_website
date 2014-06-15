@@ -1,7 +1,7 @@
 import sqlalchemy as sql
 engine = sql.create_engine("mysql://doge:dogecoin@localhost/dogecoin")
 from sqlalchemy.ext.declarative import declarative_base
-
+import requests
 Base = declarative_base()
 from sqlalchemy import Column, String,Float, Boolean 
 class priv_key(Base):
@@ -43,14 +43,28 @@ for instance in import_list:
     c+=1 
 print "scan complete"
 for instance in import_list:
-    doge_conn = doge.connect_to_local()
-    instance.pub_key = doge_conn.getaddressesbyaccount(instance.account)[0]
-    instance.coin_amount = doge_conn.getbalance(account=instance.account)
-    instance.tx_id = doge_conn.sendfrom(instance.account,instance.withdrawl,float(str(instance.coin_amount -1)))
-    print instance
-    instance.status = "complete"
-    instance.complete = True
+    try:
+        doge_conn = doge.connect_to_local()
+        instance.pub_key = doge_conn.getaddressesbyaccount(instance.account)[0]
+        url = "https://dogechain.info/api/v1/address/balance/" + str(instance.pub_key)
+        #print url
+        res = requests.get(url)
+        res_dict = res.json()
+        instance.coin_amount = float(res_dict["balance"])
+        
+        print instance.coin_amount
+        
+        instance.tx_id = doge_conn.sendfrom(instance.account,instance.withdrawl,float(str(instance.coin_amount -1)))
+        
+        instance.status = "complete"
+        instance.complete = True
+    except Exception, err:
+        #instance.status = "error:"+str(err)
+        print err
+    #print instance
     session.add(instance)
     session.commit()
+    
+    
     
 session.close()
