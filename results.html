@@ -3,46 +3,24 @@
 <html lang="en">
 
 <head>
- <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,400italic|PT+Mono' rel='stylesheet' type='text/css'>
-		<link rel="shortcut icon" href="static/favicon.ico" />
-		<link rel="stylesheet" href="static/css/style.css" type="text/css" />
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-   <meta http-equiv="refresh" content="60">
-
-
-    <title>Import Private Key </title>
+	<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,400italic|PT+Mono' rel='stylesheet' type='text/css'>
+	<link rel="shortcut icon" href="static/favicon.ico" />
+	<link rel="stylesheet" href="static/css/style.css" type="text/css" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Import Private Key </title>
 </head>
 <body>
 
-import id =  {{account}}
-
-<br>
-status = {{status}}
-<br>
-
-
-{%if tx == None %}
-
-
-transaction ID = pending
-
-
-
-{%else%}
-
-coins in address = {{coin}}
-<br>
-transaction ID = <a href = "http://dogechain.info/tx/{{tx}}">{{tx}}</a>
-{%end%} 
-
-<br>
-
-
-    
-
-<br>
-    <script src="/static/js/vendor/jquery.js"></script>
- 
+	<div>Import ID: {{account}}</div>
+	<div>Status: {{status}}</div>
+	<div>{%if tx == None %}
+		Transaction ID: pending
+	{%else%}
+		<div>Coins in address: {{coin}}</div>
+		Transaction ID: <a href = "http://dogechain.info/tx/{{tx}}">{{tx}}</a>
+	{%end%}
+	</div>
+	<script src="/static/js/vendor/jquery.js"></script>
 </body>
 </html>
