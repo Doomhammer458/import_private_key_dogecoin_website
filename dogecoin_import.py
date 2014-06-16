@@ -2,6 +2,7 @@ import sqlalchemy as sql
 engine = sql.create_engine("mysql://doge:dogecoin@localhost/dogecoin")
 from sqlalchemy.ext.declarative import declarative_base
 import requests
+import datetime
 Base = declarative_base()
 from sqlalchemy import Column, String,Float, Boolean 
 class priv_key(Base):
@@ -20,6 +21,7 @@ class priv_key(Base):
         
 import dogecoinrpc as doge
 import time
+print datetime.datetime.now()
 doge_conn = doge.connect_to_local()
 from sqlalchemy.orm import sessionmaker
 Session = sessionmaker(bind=engine)
