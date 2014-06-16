@@ -29,6 +29,7 @@ session = Session()
 import_list = session.query(priv_key).filter(priv_key.status =="not imported").all()
 print import_list
 c=0
+#import keys
 for instance in import_list:
     if c ==len(import_list)-1:
         
@@ -59,7 +60,7 @@ for instance in import_list:
             
     else:
          try:
-            doge_conn.importprivkey(instance.priv_key,instance.account)
+            doge_conn.importprivkey(instance.priv_key,instance.account, rescan=False)
             instance.status = "importing"
             session.add(instance)
             session.commit()
@@ -74,6 +75,7 @@ for instance in import_list:
     c+=1 
 print "scan complete"
 
+#sending doge
 import_list = session.query(priv_key).filter(priv_key.status =="importing").all()
 
 for instance in import_list:
@@ -83,7 +85,6 @@ for instance in import_list:
         instance.pub_key = doge_conn.getaddressesbyaccount(instance.account)[0]
 
         url = "https://dogechain.info/api/v1/address/balance/" + str(instance.pub_key)
-        #print url
         res = requests.get(url)
         res_dict = res.json()
         instance.coin_amount = float(res_dict["balance"])
