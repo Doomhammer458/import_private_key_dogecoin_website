@@ -20,7 +20,7 @@ class priv_key(Base):
         % (self.account,self.priv_key,self.coin_amount)
         
 import dogecoinrpc as doge
-import time
+
 print datetime.datetime.now()
 doge_conn = doge.connect_to_local()
 from sqlalchemy.orm import sessionmaker
@@ -48,7 +48,8 @@ for instance in import_list:
             print e
                 
             
-    address = doge_conn.getaddressesbyaccount(instance.account)[0] 
+    address = doge_conn.getaddressesbyaccount(instance.account)[0]
+    instance.pub_key = address 
     url = "https://dogechain.info/api/v1/unspent/"+address
     resp = requests.get(url).json()
     
