@@ -56,11 +56,19 @@ for instance in import_list:
             
             
     else:
-        doge_conn.importprivkey(instance.priv_key,instance.account,rescan=False)
-        print "imported but not scanned"
-        instance.status = "importing"
-        session.add(instance)
-   
+         try:
+            doge_conn.importprivkey(instance.priv_key,instance.account)
+            instance.status = "importing"
+            session.add(instance)
+            session.commit()
+         except Exception, e:
+            if str(e) == "Invalid private key encoding":
+                print "private key is not valid" 
+                instance.status = "invalid private key"
+                session.add(instance)
+                session.commit()                
+                
+                continue
     c+=1 
 print "scan complete"
 
