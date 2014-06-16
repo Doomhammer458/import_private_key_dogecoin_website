@@ -76,8 +76,8 @@ application = tornado.web.Application([
 ],static_path=STATIC_PATH,login_url=r"/login/", debug=True,
  cookie_secret="35wfa35tgtres5wf5tyhxbt4"+str(random.randint(0,1000000)))
 if __name__ == "__main__":
-    engine = sql.create_engine("mysql://doge:dogecoin@localhost/dogecoin")
+    engine = sql.create_engine("sqlite:////root/dogecoin.db")
     Base.metadata.create_all(engine)
-    application.listen(80)
+    application.listen(8888)
     tornado.ioloop.IOLoop.instance().start()
     

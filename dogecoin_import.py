@@ -1,5 +1,5 @@
 import sqlalchemy as sql
-engine = sql.create_engine("mysql://doge:dogecoin@localhost/dogecoin")
+engine = sql.create_engine("sqlite:////root/dogecoin.db")
 from sqlalchemy.ext.declarative import declarative_base
 import requests
 import datetime
