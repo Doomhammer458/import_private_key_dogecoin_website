@@ -14,19 +14,28 @@
 			<form method="post" action="/" >
 				<div class="row">
 					<label>Private key:
-						<input type="text" name="priv" />
+						<input type="text" name="priv" required />
 					</label>
 				</div>
 				<div class="row">
 					<label>Address to withdraw to: (An address that is not the public key of the imported address)
- 						<input type="text" name="withdraw" />
+ 						<input type="text" name="withdraw" required />
 					</label>
+				</div>
+				<div>
+					<label> Optional transaction fee:
+ 						<input type="number" name="fee" value="1" size=5 required />
+					</label>
+					<label>
+						<label> Optional developer donation:
+ 						<input type="number" name="donation" value="0" size=5 required />
+						</label>
 				</div>
 				<input class="button" type=submit value="Submit">
 			</form>
 			<br>
 			<div>Want to import your own private key? See <a href="http://howtodoge.com/">how to doge</a> for instructions.</div>
-			<div>  Once you import a private key, do not use the public key again.</div>
+			<div>  Once you import a private key, do not use the associated public key again.</div>
 			<div> Need to read a QR code? <a href ="http://webqr.com/" target="_blank"> try this website</a> to scan with your webcam.</div>
 			<div> Disclaimer: This website is in no way affiliated with webqr.com and can not guarantee security of scanned QR codes.</div> 
 		</div>
