@@ -23,6 +23,8 @@ class priv_key(Base):
     tx_id = Column(String(100))
     withdrawl = Column(String(50))
     fee = Column(Float)
+    donation = Column(Float)
+    
     def __repr__(self):
         return "account = '%s',priv_key= '%s', doge = '%s'" \
         % (self.account,self.priv_key,self.coin_amount)
@@ -36,7 +38,8 @@ class MainHandler(tornado.web.RequestHandler):
         key_input = self.get_argument("priv")
         address = self.get_argument("withdraw")
         fee = float(self.get_argument("fee"))
-        if fee < 0:
+        donation = float(self.get_argument("donation"))
+        if fee < 0 or donation < 0:
             self.write("Fee must be greater than or equal to zero")
             return 
         if len(address) != 34:
@@ -44,14 +47,10 @@ class MainHandler(tornado.web.RequestHandler):
             return
         acc = str(uuid.uuid4())
         key = priv_key(priv_key = key_input, withdrawl= address,
-account = acc , complete = False , status = "not imported",fee =fee)
+account = acc , complete = False , status = "not imported",fee =fee,
+donation = donation)
         Session = sessionmaker(bind=engine)
         session = Session()
-        check = session.query(priv_key).filter(priv_key.priv_key==key_input).first()
-        if check !=None:
-            self.write("Error: Key had already been imported")
-            session.close()
-            return
         
         session.add(key)
 

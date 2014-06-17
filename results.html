@@ -12,15 +12,22 @@
 	<title>Import Private Key </title>
 </head>
 <body>
-
+<div id="form-container">
 	<div>Import ID: {{account}}</div>
 	<div>Status: {{status}}</div>
-	<div>{%if tx == None %}
-		Transaction ID: pending
+	<div>{%if tx == None and status == "failed, not enough coins"%}
+	
+	<a href = "http://dogechain.info/address/{{address}}">{{address}}</a>
+		
+	{%elif tx == None %}
+	
+	
+	Transaction ID: pending
 	{%else%}
 		<div>Coins in address: {{coin}}</div>
 		Transaction ID: <a href = "http://dogechain.info/tx/{{tx}}">{{tx}}</a>
 	{%end%}
+	</div>
 	</div>
 	
 	<footer>
