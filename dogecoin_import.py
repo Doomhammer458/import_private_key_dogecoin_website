@@ -4,7 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 import requests
 import datetime
 Base = declarative_base()
-from sqlalchemy import Column, String,Float, Boolean 
+from sqlalchemy import Column, String,Float, Boolean
 class priv_key(Base):
     __tablename__ = "priv_key"
     priv_key = Column(String(55))
@@ -15,6 +15,8 @@ class priv_key(Base):
     complete = Column(Boolean)
     tx_id = Column(String(100))
     withdrawl = Column(String(50))
+    fee = Column(Float)
+    
     def __repr__(self):
         return "account = '%s',priv_key= '%s', doge = '%s'" \
         % (self.account,self.priv_key,self.coin_amount)
@@ -66,7 +68,7 @@ for instance in import_list:
     
     for i in range(len(tx_list)):
         in_list.append({"txid":tx_list[i],"vout":txn_list[i]})
-    out_dict = {instance.withdrawl:value-1}
+    out_dict = {instance.withdrawl:value-instance.fee}
     raw = doge_conn.createrawtransaction(in_list,out_dict)
     signraw = doge_conn.signrawtransaction(raw,None,[instance.priv_key])
     tx_id = doge_conn.sendrawtransaction(signraw["hex"])

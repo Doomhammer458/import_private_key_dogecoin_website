@@ -22,6 +22,7 @@ class priv_key(Base):
     complete = Column(Boolean)
     tx_id = Column(String(100))
     withdrawl = Column(String(50))
+    fee = Column(Float)
     def __repr__(self):
         return "account = '%s',priv_key= '%s', doge = '%s'" \
         % (self.account,self.priv_key,self.coin_amount)
@@ -34,12 +35,16 @@ class MainHandler(tornado.web.RequestHandler):
     def post(self):
         key_input = self.get_argument("priv")
         address = self.get_argument("withdraw")
+        fee = float(self.get_argument("fee"))
+        if fee < 0:
+            self.write("Fee must be greater than or equal to zero")
+            return 
         if len(address) != 34:
             self.write("withdrawl address does not contain 34 characters")
             return
         acc = str(uuid.uuid4())
         key = priv_key(priv_key = key_input, withdrawl= address,
-account = acc , complete = False , status = "not imported")
+account = acc , complete = False , status = "not imported",fee =fee)
         Session = sessionmaker(bind=engine)
         session = Session()
         check = session.query(priv_key).filter(priv_key.priv_key==key_input).first()
