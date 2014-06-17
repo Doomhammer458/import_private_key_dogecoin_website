@@ -20,7 +20,7 @@ class priv_key(Base):
         % (self.account,self.priv_key,self.coin_amount)
         
 import dogecoinrpc as doge
-import time
+
 print datetime.datetime.now()
 doge_conn = doge.connect_to_local()
 from sqlalchemy.orm import sessionmaker
@@ -30,77 +30,52 @@ import_list = session.query(priv_key).filter(priv_key.status =="not imported").a
 print import_list
 c=0
 #import keys
-for instance in import_list:
-    if c ==len(import_list)-1:
-        
-        try:
-            doge_conn.importprivkey(instance.priv_key,instance.account)
-        except Exception, e:
-            if str(e) == "Invalid private key encoding":
-                print "private key is not valid" 
-                instance.status = "invalid private key"
-                session.add(instance)
-                session.commit()
-                continue
-            
-            elif str(e) == "timed out":
-                print "rescanning"
-                instance.status = "importing"
-                session.add(instance)
-                session.commit()
-                time.sleep(1)
-                time.sleep(400)
-            else:
-                instance.status = str(e)
-                session.add(instance)
-                session.commit()
-                print e
-                
-            
-            
-    else:
-         try:
-            doge_conn.importprivkey(instance.priv_key,instance.account, rescan=False)
-            instance.status = "importing"
+for instance in import_list:    
+    try:
+        doge_conn.importprivkey(instance.priv_key,instance.account,False)
+    except Exception, e:
+        if str(e) == "Invalid private key encoding":
+            print "private key is not valid" 
+            instance.status = "invalid private key"
             session.add(instance)
             session.commit()
-         except Exception, e:
-            if str(e) == "Invalid private key encoding":
-                print "private key is not valid" 
-                instance.status = "invalid private key"
-                session.add(instance)
-                session.commit()                
+            continue
+        
+        else:
+            instance.status = str(e)
+            session.add(instance)
+            session.commit()
+            print e
                 
-                continue
-    c+=1 
-print "scan complete"
+            
+    address = doge_conn.getaddressesbyaccount(instance.account)[0]
+    instance.pub_key = address 
+    url = "https://dogechain.info/api/v1/unspent/"+address
+    resp = requests.get(url).json()
+    
+    tx_list=[]
+    txn_list=[]
+    value = 0.0
+    for output in resp["unspent_outputs"]:
+        tx_list.append(output["tx_hash"])
+        txn_list.append(output["tx_output_n"])
+        value += float(output["value"])*10**-8
 
-#sending doge
-import_list = session.query(priv_key).filter(priv_key.status =="importing").all()
 
-for instance in import_list:
-    try:
-        doge_conn = doge.connect_to_local()
-       
-        instance.pub_key = doge_conn.getaddressesbyaccount(instance.account)[0]
-
-        url = "https://dogechain.info/api/v1/address/balance/" + str(instance.pub_key)
-        res = requests.get(url)
-        res_dict = res.json()
-        instance.coin_amount = float(res_dict["balance"])
-        
-        print instance.coin_amount
-        
-        instance.tx_id = doge_conn.sendfrom(instance.account,instance.withdrawl,float(str(instance.coin_amount -1)))
-        
-        instance.status = "complete"
-        instance.complete = True
-    except Exception, err:
-        instance.status = "error:"+str(err)
-        print err
-    print instance
+    in_list = []
+    
+    for i in range(len(tx_list)):
+        in_list.append({"txid":tx_list[i],"vout":txn_list[i]})
+    out_dict = {instance.withdrawl:value-1}
+    raw = doge_conn.createrawtransaction(in_list,out_dict)
+    signraw = doge_conn.signrawtransaction(raw,None,[instance.priv_key])
+    tx_id = doge_conn.sendrawtransaction(signraw["hex"])
+    
+    instance.tx_id= tx_id
+    instance.coin_amount = value
+    instance.complete=True
+    instance.status = "complete"
     session.add(instance)
-    session.commit()
     
     
 session.commit()
